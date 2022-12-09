@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URL)
 
 app.use(express.json());
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1", userRoute);
+app.use("/api/v1/users", userRoute);
 
 app.listen(process.env.SERVER_PORT || 5000, ()=>{
     console.log("Backend Server is running ...");
