@@ -8,6 +8,8 @@ mongoose.set('strictQuery', true); // find doc on this
 const dotenv = require("dotenv");
 dotenv.config()
 
+const PORT = process.env.PORT || process.env.SERVER_PORT;
+
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
 
@@ -22,6 +24,6 @@ app.use(express.json());
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
 
-app.listen(process.env.SERVER_PORT || 5000, ()=>{
+app.listen( PORT, ()=>{
     console.log("Backend Server is running ...");
 });

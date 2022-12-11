@@ -1,4 +1,4 @@
-const { authorizeUser } = require("./verifyToken");
+const { authorizeUser, authorizeOnlyAdmin } = require("./verifyToken");
 const User = require("../models/User");
 
 const router = require("express").Router();
@@ -18,6 +18,24 @@ router.put("/:id", authorizeUser, async (req, res)=>{
         );
         res.status(200).json(updatedUser);
     }catch(err){
+        res.status(500).json(err);
+    }
+});
+
+router.delete("/:id", authorizeUser, async (rea, res)=>{
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).json("User Delete successfully !!");
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.get("/:id", authorizeOnlyAdmin, async(req, res)=>{
+    try {
+        const user = await User.findById(req.params.id);
+        res.status(200).json(user);
+    } catch (err) {
         res.status(500).json(err);
     }
 });
