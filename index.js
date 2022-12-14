@@ -10,9 +10,10 @@ dotenv.config()
 
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
+const a20Route = require("./routes/a20");
 
 
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_URL_A20)
         .then(()=>console.log("DB connection is Done with success !!"))
         .catch((err)=>console.log(err));
 
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGO_URL)
 app.use(express.json());
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/a20", a20Route);
 
 app.listen(process.env.SERVER_PORT || 5000, ()=>{
     console.log("Backend Server is running ...");
