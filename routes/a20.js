@@ -6,6 +6,10 @@ const router = require("express").Router();
 
 router.get("/models", async(req, res)=>{
     try {
+        console.log("request findAll");
+        res.header("Access-Control-Allow-Origin", "http://localhost:3000")
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
        const puzzles =  await A20Puzzle.find();
         res.status(201).json(puzzles);
     } catch (error) {
