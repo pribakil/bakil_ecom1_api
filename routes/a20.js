@@ -6,6 +6,17 @@ const router = require("express").Router();
 
 router.get("/models", async(req, res)=>{
     try {
+       const puzzles =  await A20Puzzle.find();
+        res.status(201).json(puzzles);
+    } catch (error) {
+        res.status(500).json(err);
+    }
+    
+    
+});
+
+router.get("/load", async(req, res)=>{
+    try {
         models.map(async function(modelArray){
             const newA20Model = new A20Model({
                 c1:modelArray[0], c2:modelArray[1],
