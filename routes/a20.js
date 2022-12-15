@@ -6,21 +6,37 @@ const router = require("express").Router();
 
 router.get("/models", async(req, res)=>{
     try {
-        console.log("request findAll");
         res.header("Access-Control-Allow-Origin", "http://localhost:3000")
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-       const puzzles =  await A20Puzzle.find();
+       const puzzles =  await A20Model.find().limit(18);
         res.status(201).json(puzzles);
-    } catch (error) {
+    } catch (err) {
+        console.log(err)
         res.status(500).json(err);
-    }
-    
+    }  
     
 });
 
-router.get("/load", async(req, res)=>{
+router.get("/delete", async(req, res)=>{
     try {
+        for (let i = 0; i < 18; i++) {
+            await A20Model.findOneAndRemove(
+                {},
+                { "sort": { "_id": -1 } }
+            )
+            console.log("=>deleted "+i)
+        }
+        
+        res.status(201).json("deleted");
+    } catch (error) {
+        res.status(500).json(err);
+    }  
+    
+});
+
+router.get("/load", (req, res)=>{
+
         models.map(async function(modelArray){
             const newA20Model = new A20Model({
                 c1:modelArray[0], c2:modelArray[1],
@@ -43,34 +59,42 @@ router.get("/load", async(req, res)=>{
                 const savedA20Model = await newA20Model.save();
     
                 const { _id, __v, createdAt, updatedAt, ...rest } = {...savedA20Model._doc};
-                rest.level = "2";
+                rest.level = "4";
                 rest.model = mongoose.Types.ObjectId(savedA20Model._id)
         
-                const arr = [1, 2, 3, 4, 5, 6, 7];
-                arr.map( function(i){
+                let counter = 1;
+                while(counter <= 12){
                     var index = Math.floor(Math.random() * (25 - 1 + 1) + 1);
                     var field = "c"+index;
-                    rest[""+field] = "";
-                } );
+
+                    if( field !== "c13" && rest[""+field] !== "" ){
+                        rest[""+field] = "";
+                        counter++;
+                    }
+                }
+            
         
                 const newA20Puzzle = new A20Puzzle({
                     ...rest
                 });
         
                 const savedA20Puzzle = await newA20Puzzle.save();
-                console.log("model added on db");
-                puzzles = [...puzzles, savedA20Puzzle._doc]
-                console.log("model added on list");
+                if( puzzles.length === 0 ){
+                    puzzles[0] = savedA20Puzzle._doc;
+                }else{
+                    puzzles = [...puzzles, savedA20Puzzle._doc]
+                }
+                
             }catch(err){
+                console.log("=> Error: "+err)
                 res.status(500).json(err);
             }
         
         });
 
+        console.log("=>puzzles :"+puzzles)
+
         res.status(201).json(puzzles);
-    } catch (error) {
-        res.status(500).json(err);
-    }
     
     
 });
@@ -100,4 +124,4 @@ const models = [
     [7, 4, 1, 6, 2, 6, 0, 5, 8, 1, 5, 2, 9, 0, 4, 0, 8, 1, 3, 8, 2, 6, 4, 3, 5],
 ];
 
-const puzzles = [];
+let puzzles = [];
