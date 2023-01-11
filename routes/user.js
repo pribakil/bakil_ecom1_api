@@ -31,6 +31,34 @@ router.delete("/:id", authorizeUser, async (rea, res)=>{
     }
 });
 
+router.get("/stats", authorizeOnlyAdmin, async(req, res)=>{
+    try {
+        console.log("in stat");
+        const date = new Date();
+        const lastYear = new Date( date.setFullYear( date.getFullYear() - 1 ) );
+        const data = await User.aggregate( [
+            { $match: { createdAt: { $gte: lastYear } } },
+            {
+                $project: { 
+                    month: { $month: "$createdAt" },
+                },
+            },
+            {
+                $group: {
+                    _id: "$month",
+                    total: { $sum: 1 },
+                },
+            },
+        ] );
+        console.log("stat data", data)
+        res.status(200).json(data);
+    } catch (err) {
+        console.log("Error => ",err)
+        res.status(500).json(err);
+    }
+});
+
+
 router.get("/:id", authorizeOnlyAdmin, async(req, res)=>{
     try {
         const user = await User.findById(req.params.id);
@@ -39,5 +67,17 @@ router.get("/:id", authorizeOnlyAdmin, async(req, res)=>{
         res.status(500).json(err);
     }
 });
+
+router.get("/", authorizeOnlyAdmin, async(req, res)=>{
+    try {
+        const query = req.query.new
+        const users = query === "true" ? await User.find().sort({_id : -1}).limit(1) 
+                            : await User.find();
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
 
 module.exports = router;

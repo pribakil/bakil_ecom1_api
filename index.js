@@ -12,10 +12,11 @@ const PORT = process.env.PORT || process.env.SERVER_PORT;
 
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
-const a20Route = require("./routes/a20");
+const productRoute = require("./routes/product");
+//const a20Route = require("./routes/a20");
 
 
-mongoose.connect(process.env.MONGO_URL_A20)
+mongoose.connect(process.env.MONGO_URL)
         .then(()=>console.log("DB connection is Done with success !!"))
         .catch((err)=>console.log(err));
 
@@ -28,7 +29,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
-app.use("/api/v1/a20", a20Route);
+app.use("/api/v1/prodcut", productRoute);
+//app.use("/api/v1/a20", a20Route);
 
 
 
