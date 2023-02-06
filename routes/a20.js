@@ -6,14 +6,11 @@ const router = require("express").Router();
 
 router.get("/models", async(req, res)=>{
     try {
-        res.header("Access-Control-Allow-Origin", "http://localhost:3000")
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
-       const puzzles =  await A20Model.find().limit(18);
-        res.status(201).json(puzzles);
+      const puzzles = await A20Model.find().limit(18);
+      res.status(201).json(puzzles);
     } catch (err) {
-        console.log(err)
-        res.status(500).json(err);
+      console.log(err);
+      res.status(500).json(err);
     }  
     
 });
